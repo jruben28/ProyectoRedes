@@ -127,7 +127,7 @@ def servidor_udp():
 
             fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-            broadcast_udp(
+            publico_udp(
                 f"[{fecha}] {nombre} se unio al chat",
                 direccion
             )
