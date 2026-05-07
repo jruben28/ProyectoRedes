@@ -41,7 +41,7 @@ class ServidorTCP:
         nuevo_usuario = Usuario(nombre, conexion, direccion)
         self.usuarios.append(nuevo_usuario)
 
-        self.broadcast(f"{nombre} se ha unido al chat.", None)
+        self.publico(f"{nombre} se ha unido al chat.", None)
 
         while True:
             try:
@@ -63,14 +63,14 @@ class ServidorTCP:
                     self.enviar_privado(nombre, destinatario, contenido)
 
                 else:
-                    self.broadcast(mensaje, nombre)
+                    self.publico(mensaje, nombre)
 
             except:
                 break
 
         self.desconectar_usuario(nombre)
 
-    def broadcast(self, mensaje, remitente):
+    def publico(self, mensaje, remitente):
         fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         if remitente:
@@ -98,5 +98,5 @@ class ServidorTCP:
             if self.usuarios[i].nombre == nombre:
                 self.usuarios[i].conexion.close()
                 del self.usuarios[i]
-                self.broadcast(f"{nombre} salió del chat.", None)
+                self.publico(f"{nombre} salió del chat.", None)
                 break

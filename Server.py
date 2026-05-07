@@ -14,12 +14,20 @@ clientes_conectados = {}
 direcciones = set()
 
 def broadcast_tcp(mensaje, remitente_socket):
-    """Envía a todos los conectados vpia tcp."""
+    """Envía a todos los conectados via tcp"""
+    for socket_cliente in clientes_conectados.values():
+        try:
+            # Evita reenviar al mismo cliente
+            if socket_cliente != remitente_socket:
+                socket_cliente.send(mensaje.encode())
+
+        except:
+            pass
     
     
 
 def broadcast_udp(mensaje, remitente_socket):
-    """Envía a todos los conecatdos vía udp."""
+    """Envía a todos los conecatdos via udp"""
     
 
 def manejar_cliente(cliente_socket, direccion):
@@ -69,5 +77,6 @@ def iniciar_aplicacion():
 if __name__ == "__main__":
     try:
         iniciar_aplicacion()
+
     except KeyboardInterrupt:
         print("\nServidor detenido.")
