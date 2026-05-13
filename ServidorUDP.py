@@ -125,6 +125,8 @@ def servidor_udp():
 
             print(f"{nombre} conectado desde {direccion}")
 
+            servidor_socket.sendto("Bienvenido al chat".encode(), direccion)
+
             fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
             publico_udp(
