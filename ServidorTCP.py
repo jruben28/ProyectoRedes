@@ -100,3 +100,10 @@ class ServidorTCP:
                 del self.usuarios[i]
                 self.publico(f"{nombre} salió del chat.", None)
                 break
+# KeyboardInterrupt para cerrar el servido por la terminal. 
+if __name__ == "__main__":
+    try:
+        servidor = ServidorTCP()
+        servidor.iniciar()
+    except KeyboardInterrupt:
+        print("\nServidor TCP detenido.")
