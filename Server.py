@@ -69,7 +69,7 @@ def servidor_udp():
 def iniciar_aplicacion():
     
     # interfaz gráfica(?)
-    
+    pass
     
     
     
