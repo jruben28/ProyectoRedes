@@ -1,7 +1,11 @@
 import socket
 import threading
 
-servidor = ("127.0.0.1", 5001)
+HOST = "127.0.0.1"
+PUERTO_UDP = 5001
+
+servidor = ( HOST, PUERTO_UDP)
+
 
 def recibir_mensajes(s):
     while True:
