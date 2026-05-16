@@ -1,82 +1,52 @@
-import socket
-import threading
-import json
+import sys
+from ServidorTCP import ServidorTCP
+from ServidorUDP import servidor_udp
 
 
-HOST = '0.0.0.0'
-PORT_TCP = 5000
-PORT_UDP = 5001
-MAX_USUARIOS = 5
+def menu():
+    print("\n--- PANEL DE CONTROL DEL SERVIDOR ---")
+    print("1. Iniciar Servidor TCP")
+    print("2. Iniciar Servidor UDP")
+    print("3. Salir")
+    return input("Seleccione una opción: ")
 
-
-# DICCIONARIO para mapear nombre y socket
-clientes_conectados = {} 
-direcciones = set()
-
-def broadcast_tcp(mensaje, remitente_socket):
-    """Envía a todos los conectados via tcp"""
-    for socket_cliente in clientes_conectados.values():
-        try:
-            # Evita reenviar al mismo cliente
-            if socket_cliente != remitente_socket:
-                socket_cliente.send(mensaje.encode())
-
-        except:
-            pass
-    
-    
-
-def broadcast_udp(mensaje, remitente_socket):
-    """Envía a todos los conecatdos via udp"""
-    
-
-def manejar_cliente(cliente_socket, direccion):
-    """  """
-    print()
-
-
-def servidor_tcp():
-    # Inicializar server tcp
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((HOST, PORT_TCP))
-    server_socket.listen(1)
-
-    print("--- Servidor TCP inicializado ---")
-    conn, addr = server_socket.accept()
-    print(f"Connected by {addr}")
+def ejecutar_servidor():
+    HOST = "127.0.0.1"
+    PUERTO_TCP = 5000
+    PUERTO_UDP = 5001
 
     while True:
-        data = conn.recv(1024)
-        if not data: break
-        conn.sendall(data)
-    conn.close()
-    
-    
-def servidor_udp():
-    #Inicializar server UDP
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind((HOST, PORT_UDP))
+        opcion = menu()
 
-    print("--- Servidor UDP inicializado ---")
-    
-    while True:
-        data, addr = server_socket.recvfrom(1024)
-        print(f"Received from {addr}: {data.decode()}")
-        server_socket.sendto(b"ACK", addr)
+        if opcion == "1":
+            print(f"\n[SISTEMA] Cambiando a TCP en {HOST}:{PUERTO_TCP}...")
+            try:
+                servidor = ServidorTCP(host=HOST, puerto=PUERTO_TCP)
+                servidor.iniciar() 
+            except KeyboardInterrupt:
+                print("\n[SISTEMA] Servidor TCP detenido manualmente.")
+            except Exception as e:
+                print(f"[ERROR TCP] {e}")
+
+        elif opcion == "2":
+            print(f"\n[SISTEMA] Cambiando a UDP en {HOST}:{PUERTO_UDP}...")
+            try:
+                servidor_udp(host=HOST, puerto=PUERTO_UDP)
+            except KeyboardInterrupt:
+                print("\n[SISTEMA] Servidor UDP detenido manualmente.")
+            except Exception as e:
+                print(f"[ERROR UDP] {e}")
+
+        elif opcion == "3":
+            print("Saliendo del sistema...")
+            sys.exit()
+        else:
+            print("Opción no válida.")
+
     
 
-
-def iniciar_aplicacion():
-    
-    # interfaz gráfica(?)
-    pass
-    
-    
-    
 
 if __name__ == "__main__":
-    try:
-        iniciar_aplicacion()
-
-    except KeyboardInterrupt:
-        print("\nServidor detenido.")
+    ejecutar_servidor()
+    
+    
