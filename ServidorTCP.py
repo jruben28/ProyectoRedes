@@ -5,7 +5,7 @@ from Usuario import Usuario
 
 
 class ServidorTCP:
-    def __init__(self, host="127.0.0.1", puerto=1060):
+    def __init__(self, host, puerto):
         self.host = host
         self.puerto = puerto
         self.servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -100,10 +100,12 @@ class ServidorTCP:
                 del self.usuarios[i]
                 self.publico(f"{nombre} salió del chat.", None)
                 break
-# KeyboardInterrupt para cerrar el servido por la terminal. 
+            
+            
 if __name__ == "__main__":
     try:
         servidor = ServidorTCP()
         servidor.iniciar()
     except KeyboardInterrupt:
         print("\nServidor TCP detenido.")
+        
