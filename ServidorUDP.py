@@ -1,8 +1,8 @@
 import socket
 from datetime import datetime
 
-HOST = '0.0.0.0'
-PORT_UDP = 5001
+#HOST = '0.0.0.0'
+#PORT_UDP = 5001
 MAX_USUARIOS = 5
 
 # nombre (ip, puerto)
@@ -68,7 +68,7 @@ def buscar_usuario_por_direccion(direccion):
     return None
 
 
-def servidor_udp():
+def servidor_udp(HOST, PORT_UDP):
 
     global servidor_socket
 
