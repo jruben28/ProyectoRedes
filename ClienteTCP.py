@@ -1,6 +1,10 @@
 import socket
 import threading
 
+HOST = "127.0.0.1"
+PUERTO_TCP = 5000
+
+
 def recibir_mensajes(s):
     while True:
         try:
@@ -20,7 +24,7 @@ print("Chat TCP")
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-    s.connect(("127.0.0.1", 1060))
+    s.connect((HOST, PUERTO_TCP))
 except ConnectionRefusedError:
     print("Error: El servidor no está encendido o rechazó la conexión.")
     exit()
