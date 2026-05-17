@@ -22,6 +22,7 @@ def ejecutar_servidor():
             print(f"\n[SISTEMA] Cambiando a TCP en {HOST}:{PUERTO_TCP}...")
             try:
                 servidor = ServidorTCP(host=HOST, puerto=PUERTO_TCP)
+                servidor.servidor.settimeout(1.0)
                 servidor.iniciar() 
             except KeyboardInterrupt:
                 print("\n[SISTEMA] Servidor TCP detenido manualmente.")
