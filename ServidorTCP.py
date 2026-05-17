@@ -31,11 +31,20 @@ class ServidorTCP:
                     conexion, direccion = self.servidor.accept()
 
                     if len(self.usuarios) >= 5:
-                        conexion.send("Servidor lleno (máximo 5 usuarios).".encode())
+                        conexion.send(
+                            "Servidor lleno (máximo 5 usuarios).".encode()
+                        )
                         conexion.close()
-                        hilo.daemon = True
-                        hilo = threading.Thread(target=self.registrar_cliente, args=(conexion, direccion))
-                        hilo.start()
+                        continue
+
+                    # Crear hilo correctamente
+                    hilo = threading.Thread(
+                        target=self.registrar_cliente,
+                        args=(conexion, direccion)
+                    )
+
+                    hilo.daemon = True
+                    hilo.start()
                 except socket.timeout:
                     continue
         except KeyboardInterrupt:
@@ -45,8 +54,14 @@ class ServidorTCP:
             self.detener()
 
     def registrar_cliente(self, conexion, direccion):
+
         conexion.send("Ingrese su nombre de usuario: ".encode())
         nombre = conexion.recv(1024).decode().strip()
+
+        # Validar nombre vacío
+        if not nombre:
+            conexion.close()
+            return
 
         for usuario in self.usuarios:
             if usuario.nombre == nombre:
@@ -57,6 +72,8 @@ class ServidorTCP:
         nuevo_usuario = Usuario(nombre, conexion, direccion)
         self.usuarios.append(nuevo_usuario)
 
+        conexion.send("Bienvenido al chat TCP.".encode())
+
         self.publico(f"{nombre} se ha unido al chat.", None)
 
         while True:
@@ -64,6 +81,9 @@ class ServidorTCP:
                 mensaje = conexion.recv(1024).decode()
 
                 if not mensaje:
+                    break
+
+                if mensaje == "/salir":
                     break
 
                 if mensaje.startswith("/privado"):
@@ -93,6 +113,8 @@ class ServidorTCP:
             mensaje_final = f"[{fecha}] {remitente}: {mensaje}"
         else:
             mensaje_final = f"[{fecha}] {mensaje}"
+
+        print(mensaje_final)
 
         for usuario in self.usuarios:
             try:
