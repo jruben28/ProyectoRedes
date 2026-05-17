@@ -10,23 +10,39 @@ class ServidorTCP:
         self.puerto = puerto
         self.servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.usuarios = []
+        self.ejecutando = True
 
     def iniciar(self):
+        self.servidor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.servidor.bind((self.host, self.puerto))
         self.servidor.listen(5)
+        self.servidor.settimeout(1.0)
 
         print(f"Servidor TCP escuchando en {self.host}:{self.puerto}")
 
-        while True:
-            conexion, direccion = self.servidor.accept()
+        print("Presiona Ctrl+C para volver al menú principal.")
 
-            if len(self.usuarios) >= 5:
-                conexion.send("Servidor lleno (máximo 5 usuarios).".encode())
-                conexion.close()
-                continue
 
-            hilo = threading.Thread(target=self.registrar_cliente, args=(conexion, direccion))
-            hilo.start()
+
+        try:
+            while self.ejecutando:
+                
+                try:
+                    conexion, direccion = self.servidor.accept()
+
+                    if len(self.usuarios) >= 5:
+                        conexion.send("Servidor lleno (máximo 5 usuarios).".encode())
+                        conexion.close()
+                        hilo.daemon = True
+                        hilo = threading.Thread(target=self.registrar_cliente, args=(conexion, direccion))
+                        hilo.start()
+                except socket.timeout:
+                    continue
+        except KeyboardInterrupt:
+            print("\n[TCP] detenido.")
+            
+        finally:
+            self.detener()
 
     def registrar_cliente(self, conexion, direccion):
         conexion.send("Ingrese su nombre de usuario: ".encode())
@@ -100,7 +116,13 @@ class ServidorTCP:
                 del self.usuarios[i]
                 self.publico(f"{nombre} salió del chat.", None)
                 break
-            
+        
+    def detener(self):
+            self.ejecutando = False
+            for u in self.usuarios:
+                u.conexion.close()
+            self.servidor.close()
+            print("[TCP] Socket cerrado.")    
             
 if __name__ == "__main__":
     try:
