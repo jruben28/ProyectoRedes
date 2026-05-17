@@ -148,7 +148,7 @@ class ServidorTCP:
             
 if __name__ == "__main__":
     try:
-        servidor = ServidorTCP()
+        servidor = ServidorTCP("127.0.0.1", 5000)
         servidor.iniciar()
     except KeyboardInterrupt:
         print("\nServidor TCP detenido.")

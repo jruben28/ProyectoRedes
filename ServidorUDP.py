@@ -71,7 +71,9 @@ def buscar_usuario_por_direccion(direccion):
 def servidor_udp(host, puerto):
 
     global servidor_socket
-
+     
+    clientes_udp.clear()
+    
     # Crear socket UDP
     servidor_socket = socket.socket(
         socket.AF_INET,
@@ -107,7 +109,7 @@ def servidor_udp(host, puerto):
                 if len(partes) < 2:
                     continue
 
-                nombre = partes[1].trip()
+                nombre = partes[1].strip()
 
                 if not nombre:
                     continue
@@ -226,7 +228,7 @@ def servidor_udp(host, puerto):
 if __name__ == "__main__":
 
     try:
-        servidor_udp()
+        servidor_udp("127.0.0.1", 5001)
 
     except KeyboardInterrupt:
         print("\nServidor UDP detenido")

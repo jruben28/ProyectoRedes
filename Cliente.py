@@ -65,8 +65,10 @@ def modo_udp():
 
         while True:
             msg = input("> ")
-            if msg == "/salir": break
             s.sendto(msg.encode(), servidor_dir)
+            if msg == "/salir": 
+                 break
+            
     except Exception as e:
         print(f"Error en UDP: {e}")
     finally:
