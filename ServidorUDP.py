@@ -68,7 +68,7 @@ def buscar_usuario_por_direccion(direccion):
     return None
 
 
-def servidor_udp(host, puerto):
+def servidor_udp(HOST, PORT_UDP):
 
     global servidor_socket
 
@@ -78,9 +78,9 @@ def servidor_udp(host, puerto):
         socket.SOCK_DGRAM
     )
 
-    servidor_socket.bind((host, puerto))
+    servidor_socket.bind((HOST, PORT_UDP))
 
-    print(f"Servidor UDP iniciado en puerto {puerto}")
+    print(f"Servidor UDP iniciado en puerto {PORT_UDP}")
 
     while True:
 
@@ -186,3 +186,10 @@ def servidor_udp(host, puerto):
             )
 
 
+if __name__ == "__main__":
+
+    try:
+        servidor_udp()
+
+    except KeyboardInterrupt:
+        print("\nServidor UDP detenido")
