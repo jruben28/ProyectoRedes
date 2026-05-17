@@ -80,110 +80,147 @@ def servidor_udp(host, puerto):
 
     servidor_socket.bind((host, puerto))
 
+    servidor_socket.settimeout(1.0)
+
     print(f"Servidor UDP iniciado en puerto {puerto}")
+    print("Presiona Ctrl+C para volver al menú principal.")
 
-    while True:
+    try:
 
-        # Recibir datos
-        datos, direccion = servidor_socket.recvfrom(1024)
+        while True:
+            try:
 
-        mensaje = datos.decode().strip()
-
-        # REGISTRO
-
-        if mensaje.startswith("/registro"):
-
-            partes = mensaje.split(" ", 1)
-
-            if len(partes) < 2:
+                # Recibir datos
+                datos, direccion = servidor_socket.recvfrom(1024)
+            except socket.timeout:
+                # Cada segundo vuelve a intentar
                 continue
 
-            nombre = partes[1]
+            mensaje = datos.decode().strip()
 
-            # Maximo usuarios
-            if len(clientes_udp) >= MAX_USUARIOS:
+            # REGISTRO
 
-                servidor_socket.sendto(
-                    "Servidor lleno".encode(),
+            if mensaje.startswith("/registro"):
+
+                partes = mensaje.split(" ", 1)
+
+                if len(partes) < 2:
+                    continue
+
+                nombre = partes[1].trip()
+
+                if not nombre:
+                    continue
+
+                # Maximo usuarios
+                if len(clientes_udp) >= MAX_USUARIOS:
+
+                    servidor_socket.sendto(
+                        "Servidor lleno".encode(),
+                        direccion
+                    )
+
+                    continue
+
+                # Nombre repetido
+                if nombre in clientes_udp:
+
+                    servidor_socket.sendto(
+                        "Nombre ya en uso".encode(),
+                        direccion
+                    )
+
+                    continue
+
+                # Guardar usuario
+                clientes_udp[nombre] = direccion
+
+                print(f"{nombre} conectado desde {direccion}")
+
+                servidor_socket.sendto("Bienvenido al chat".encode(), direccion)
+
+                fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+                publico_udp(
+                    f"[{fecha}] {nombre} se unio al chat",
                     direccion
                 )
 
                 continue
 
-            # Nombre repetido
-            if nombre in clientes_udp:
+            # BUSCAR REMITENTE
 
-                servidor_socket.sendto(
-                    "Nombre ya en uso".encode(),
+            remitente = buscar_usuario_por_direccion(direccion)
+
+            if remitente is None:
+                continue
+
+            #SALIR
+            if mensaje == "/salir":
+
+                if remitente in clientes_udp:
+                    del clientes_udp[remitente]
+
+                fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+                publico_udp(
+                    f"[{fecha}] {remitente} salió del chat",
                     direccion
                 )
 
+                print(f"{remitente} se desconectó")
+
                 continue
 
-            # Guardar usuario
-            clientes_udp[nombre] = direccion
+            # MENSAJE PRIVADO
 
-            print(f"{nombre} conectado desde {direccion}")
+            if mensaje.startswith("/privado"):
 
-            servidor_socket.sendto("Bienvenido al chat".encode(), direccion)
+                partes = mensaje.split(" ", 2)
 
-            fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                if len(partes) < 3:
 
-            publico_udp(
-                f"[{fecha}] {nombre} se unio al chat",
-                direccion
-            )
+                    servidor_socket.sendto(
+                        "Formato: /privado usuario mensaje".encode(),
+                        direccion
+                    )
 
-            continue
+                    continue
 
-        # BUSCAR REMITENTE
+                destinatario = partes[1]
+                contenido = partes[2]
 
-        remitente = buscar_usuario_por_direccion(direccion)
-
-        if remitente is None:
-            continue
-
-        # MENSAJE PRIVADO
-
-        if mensaje.startswith("/privado"):
-
-            partes = mensaje.split(" ", 2)
-
-            if len(partes) < 3:
-
-                servidor_socket.sendto(
-                    "Formato: /privado usuario mensaje".encode(),
-                    direccion
+                enviar_privado_udp(
+                    remitente,
+                    destinatario,
+                    contenido
                 )
 
-                continue
+            # BROADCAST
 
-            destinatario = partes[1]
-            contenido = partes[2]
+            else:
 
-            enviar_privado_udp(
-                remitente,
-                destinatario,
-                contenido
-            )
+                fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        # BROADCAST
+                mensaje_final = (
+                    f"[{fecha}] "
+                    f"{remitente}: {mensaje}"
+                )
 
-        else:
+                print(mensaje_final)
 
-            fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                publico_udp(
+                    mensaje_final,
+                    direccion    
+                )
 
-            mensaje_final = (
-                f"[{fecha}] "
-                f"{remitente}: {mensaje}"
-            )
+    except KeyboardInterrupt:
+        print("\nServidor UDP detenido")
 
-            print(mensaje_final)
+    finally:
+        servidor_socket.close()
+        print("[UDP] Socket cerrado.")
 
-            publico_udp(
-                mensaje_final,
-                direccion
-            )
 
 
 if __name__ == "__main__":
