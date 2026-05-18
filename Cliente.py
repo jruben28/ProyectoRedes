@@ -7,6 +7,10 @@ PUERTO_TCP = 5000
 PUERTO_UDP = 5001
 
 def recibir_tcp(s):
+    """
+        Metodo encargado de recibir el apartado tcp
+    """
+    
     while True:
         try:
             data = s.recv(1024)
@@ -18,6 +22,10 @@ def recibir_tcp(s):
             break
 
 def modo_tcp():
+    """
+        Inicia la conexión de tipo TCP
+    """
+    
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.connect((HOST, PUERTO_TCP))
@@ -42,6 +50,10 @@ def modo_tcp():
         s.close()
 
 def recibir_udp(s):
+    """
+        Encargada de recibir el apartado UDP
+    """
+    
     while True:
         try:
             datos, _ = s.recvfrom(1024)
@@ -50,6 +62,10 @@ def recibir_udp(s):
             break
 
 def modo_udp():
+    """
+        Inicializa la conexión UDP
+    """
+    
     servidor_dir = (HOST, PUERTO_UDP)
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     nombre = input("Nombre para UDP: ")
@@ -75,6 +91,10 @@ def modo_udp():
         s.close()
 
 def menu():
+    """
+        Modulo de opciones para el cliente.
+    """
+    
     while True:
         print("\n--- CHAT MULTIPROTOCOLO ---")
         print("1. Entrar modo TCP")

@@ -5,7 +5,14 @@ from Usuario import Usuario
 
 
 class ServidorTCP:
+    """
+        Clase para el modulo de servidorTCP
+    """
     def __init__(self, host, puerto):
+        """
+            Constructor de la clase con el host y el puerto
+        """
+        
         self.host = host
         self.puerto = puerto
         self.servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,6 +20,9 @@ class ServidorTCP:
         self.ejecutando = True
 
     def iniciar(self):
+        """
+            Inicializamos el servidorTCP
+        """
         self.servidor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.servidor.bind((self.host, self.puerto))
         self.servidor.listen(5)
@@ -54,7 +64,10 @@ class ServidorTCP:
             self.detener()
 
     def registrar_cliente(self, conexion, direccion):
-
+        """
+            Inicializa la conexión con el cliente.
+        """
+        
         conexion.send("Ingrese su nombre de usuario: ".encode())
         nombre = conexion.recv(1024).decode().strip()
 
@@ -107,6 +120,10 @@ class ServidorTCP:
         self.desconectar_usuario(nombre)
 
     def publico(self, mensaje, remitente):
+        """
+            Encargado de manejar el mensaje público
+        """
+        
         fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         if remitente:
@@ -123,6 +140,10 @@ class ServidorTCP:
                 pass
 
     def enviar_privado(self, remitente, destinatario, mensaje):
+        """
+            Encargado de envar lo mensajes privados.
+        """
+        
         fecha = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         for usuario in self.usuarios:
@@ -132,6 +153,10 @@ class ServidorTCP:
                 return
 
     def desconectar_usuario(self, nombre):
+        """
+            Finaliza la conexión con el usuario dado
+        """
+        
         for i in range(len(self.usuarios)):
             if self.usuarios[i].nombre == nombre:
                 self.usuarios[i].conexion.close()

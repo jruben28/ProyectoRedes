@@ -4,6 +4,10 @@ from ServidorUDP import servidor_udp
 
 
 def menu():
+    """
+        Menú con las opciones a elegir de modo del servidor
+    """
+    
     print("\n--- PANEL DE CONTROL DEL SERVIDOR ---")
     print("1. Iniciar Servidor TCP")
     print("2. Iniciar Servidor UDP")
@@ -11,6 +15,10 @@ def menu():
     return input("Seleccione una opción: ")
 
 def ejecutar_servidor():
+    """
+        Ejecuta El tipo de servidor elegido
+    """
+    
     HOST = "127.0.0.1"
     PUERTO_TCP = 5000
     PUERTO_UDP = 5001

@@ -69,7 +69,10 @@ def buscar_usuario_por_direccion(direccion):
 
 
 def servidor_udp(host, puerto):
-
+    """
+        Inicializa el servidor udp con los parametros de host y de puerto
+    """
+    
     global servidor_socket
      
     clientes_udp.clear()
